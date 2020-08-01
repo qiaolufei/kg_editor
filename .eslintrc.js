@@ -7,7 +7,6 @@ module.exports = {
   },
   env: {
     browser: true,
-    jquery: true, //jquery
   },
   extends: [
     // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention

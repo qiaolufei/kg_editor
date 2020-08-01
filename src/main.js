@@ -5,7 +5,6 @@ import App from './App'
 import elementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import router from './router'
-import $ from 'jquery'
 import qs from 'qs'
 import '../static/reset.css'
 
@@ -18,7 +17,6 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
-  $,
   components: { App },
   template: '<App/>'
 })

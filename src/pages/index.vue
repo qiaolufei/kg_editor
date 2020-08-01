@@ -3,6 +3,7 @@
         <headpage></headpage>
         hello world!
         <div id="myChart" :style="{width: '300px', height: '300px'}"></div>
+        <el-button  v-print="'#myChart'">打印</el-button>
     </div>
 </template>
 <script>

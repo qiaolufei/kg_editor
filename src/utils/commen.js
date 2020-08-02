@@ -1,8 +1,8 @@
 // 通用方法
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
-
-function exportToExcel (id, name) { // 导出表格
+// 导出表格
+function exportToExcel (id, name) {
   var xlsxParam = { raw: true }
   var wb = XLSX.utils.table_to_book(document.querySelector(id), xlsxParam)
   var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
@@ -14,6 +14,7 @@ function exportToExcel (id, name) { // 导出表格
   }
   return wbout
 }
+
 // 判断字符、数组是否为空 空返回true
 function isNullAndEmpty (param) {
   if (param instanceof Array) {

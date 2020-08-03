@@ -16,7 +16,8 @@
 - ##### vue-print-nb https://www.npmjs.com/package/vue-print-nb
 	- 打印插件
 	- 在index.html里有简单的示例
-- ##### file-saver https://github.com/eligrey/FileSaver.js、xlsx https://github.com/SheetJS/js-xlsx
+- ##### file-saver https://github.com/eligrey/FileSaver.js
+- ##### xlsx https://github.com/SheetJS/js-xlsx
 	- 在commen.js里封装，实现外部调用
 	``` 
 	import { exportToExcel } from '../utils/commen'

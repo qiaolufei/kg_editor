@@ -26,4 +26,4 @@
 - ##### commen.js
 	- 定义全局可调用的方法
 		- exportToExcel：导出Excel
-		- isNullAndEmpty： 判断字符串或者数组是否为空
+		- isNullAndEmpty： 判断字符串、数组、对象是否为空

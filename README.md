@@ -28,6 +28,9 @@
 	- 定义全局可调用的方法
 		- exportToExcel (id, name)：导出Excel
 		- isNullAndEmpty (param)： 判断字符串、数组、对象是否为空
+		- funJS：函数相关方法
+    	  - throttle (fn, delay)：节流
+    	  - debounce (fn, delay)：防抖 
 		- timeJS: 时间相关方法
   		  - getNowTime (format)：获取当前时间，传入需要的格式
   		  - timeToStamp (timestamp, format)：时间戳转为日期格式
@@ -37,3 +40,6 @@
           - unqiueArr (arr)：数组去重
           - tileArr (arr)：平铺多维数组
           - arrOperation (arr1, arr2, mode)：两个数组之间的运算(交集、差集、补集、并集)
+        - objectJS：对象相关方法
+          - cloneObject (target, source)：深拷贝对象
+          - clearValue (obj)：清空所有value(string为''/Array为[]/Number为0/Boolean为true)

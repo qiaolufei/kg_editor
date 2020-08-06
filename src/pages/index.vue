@@ -29,7 +29,7 @@
 <script>
 import headpage from '@/components/header'
 import { login } from '../utils/api'
-import { exportToExcel, isNullAndEmpty, timeJS, arrayJS } from '../utils/commen'
+import { exportToExcel, isNullAndEmpty, timeJS, arrayJS, objectJS } from '../utils/commen'
 export default {
   data () {
     return {
@@ -86,6 +86,14 @@ export default {
     console.log(isNullAndEmpty(a))
     console.log(timeJS.countdown('2020-8-6 15:10'))
     console.log(arrayJS.arrOperation([1, 2, 3], [2, 5, 6], 4))
+    let obj1 = {
+      name: '小明',
+      age: 23,
+      other: [1, 2, 3],
+      height: false
+    }
+    objectJS.clearValue(obj1)
+    console.log(obj1)
   }
 }
 </script>

@@ -37,6 +37,28 @@ function isNullAndEmpty (param) {
   }
 }
 
+const funJS = { // 函数相关方法
+  throttle (fn, delay) { // 节流
+    var lastTime = 0 // 记录上一次函数触发的时间
+    return function () {
+      let nowTime = Date.now() // 记录上一次函数触发的时间
+      if (nowTime - lastTime > delay) {
+        fn().call(this) // 修正this指向
+        lastTime = nowTime // 同步时间
+      }
+    }
+  },
+  debounce (fn, delay) { // 防抖
+    var timer = null // 记录上一次的延时器
+    return function () {
+      clearTimeout(timer) // 清除上一次的延时器
+      timer = setTimeout(function () {
+        fn.apply(this)
+      }, delay)
+    }
+  }
+}
+
 const timeJS = { // 时间相关方法
   formatTime (param, format) {
     let d = param === 0 ? new Date() : new Date(param)
@@ -103,6 +125,7 @@ const timeJS = { // 时间相关方法
     }
   }
 }
+
 const arrayJS = { // 数组相关方法
   unqiueArr (arr) { // 数组去重
     let [...arr1] = new Set(arr)
@@ -127,9 +150,47 @@ const arrayJS = { // 数组相关方法
     }
   }
 }
+
+const objectJS = {
+  cloneObject (target, source) { // 深拷贝对象
+    var names = Object.getOwnPropertyNames(source) // 获取对象的所有属性名
+    for (var i = 0; i < names.length; i++) {
+      var desc = Object.getOwnPropertyDescriptor(source, names[i])
+      if (typeof (desc.value) === 'object' && desc.value !== null) {
+        var obj
+        if (Array.isArray(desc.value)) {
+          obj = []
+        } else {
+          obj = {}
+        }
+        Object.defineProperty(target, names[i], {
+          configurable: desc.configurable, // 不可删除
+          enumerable: desc.enumerable, // 是否可遍历
+          value: obj, // 值
+          writable: desc.writable // 是否可修改
+        })
+        this.cloneObject(obj, desc.value)
+      } else {
+        Object.defineProperty(target, names[i], desc)
+      }
+    }
+  },
+  clearValue (obj) { // 清空所有value(string为''/Array为[]/Number为0/Boolean为true)
+    for (let key in obj) {
+      if (typeof obj[key] === 'string') {
+        obj[key] = ''
+      } else if (obj[key] instanceof Array) {
+        obj[key] = []
+      } else if (typeof obj[key] === 'number') {
+        obj[key] = 0
+      } else if (typeof obj[key] === 'boolean') {
+        obj[key] = true
+      }
+    }
+  }
+}
 export {
   exportToExcel,
   isNullAndEmpty,
-  timeJS,
-  arrayJS
+  funJS, timeJS, arrayJS, objectJS
 }

@@ -18,6 +18,7 @@
 	- 在index.html里有简单的示例
 - ##### file-saver https://github.com/eligrey/FileSaver.js
 - ##### xlsx https://github.com/SheetJS/js-xlsx
+	- 导出EXCEL
 	- 在commen.js里封装，实现外部调用
 	``` 
 	import { exportToExcel } from '../utils/commen'
@@ -32,3 +33,7 @@
   		  - timeToStamp (timestamp, format)：时间戳转为日期格式
   		  - compareTime (startTime, endTime)：比较时间大小
   		  - countdown (time)：计算时间差，可用于倒计时
+        - arrayJS：数组相关方法
+          - unqiueArr (arr)：数组去重
+          - tileArr (arr)：平铺多维数组
+          - arrOperation (arr1, arr2, mode)：两个数组之间的运算(交集、差集、补集、并集)

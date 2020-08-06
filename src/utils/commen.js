@@ -37,7 +37,7 @@ function isNullAndEmpty (param) {
   }
 }
 
-const timeJS = {
+const timeJS = { // 时间相关方法
   formatTime (param, format) {
     let d = param === 0 ? new Date() : new Date(param)
     let year = d.getFullYear()
@@ -103,8 +103,33 @@ const timeJS = {
     }
   }
 }
+const arrayJS = { // 数组相关方法
+  unqiueArr (arr) { // 数组去重
+    let [...arr1] = new Set(arr)
+    return arr1
+  },
+  tileArr (arr) { // 平铺多维数组
+    return arr.reduce((acc, cur) =>
+      acc.concat(Array.isArray(cur) ? this.tileArr(cur) : cur), [])
+  },
+  arrOperation (arr1, arr2, mode) { // 两个数组之间的运算
+    let arr11 = new Set(arr1)
+    let arr22 = new Set(arr2)
+    switch (mode) {
+      case 1: // 交集
+        return arr1.filter(x => arr22.has(x))
+      case 2: // 差集
+        return arr1.filter(x => !arr22.has(x))
+      case 3: // 补集
+        return [...arr1.filter(x => !arr22.has(x)), ...arr2.filter(x => !arr11.has(x))]
+      case 4: // 并集
+        return Array.from(new Set([...arr1, ...arr2]))
+    }
+  }
+}
 export {
   exportToExcel,
   isNullAndEmpty,
-  timeJS
+  timeJS,
+  arrayJS
 }

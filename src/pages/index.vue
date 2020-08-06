@@ -29,7 +29,7 @@
 <script>
 import headpage from '@/components/header'
 import { login } from '../utils/api'
-import { exportToExcel } from '../utils/commen'
+import { exportToExcel, isNullAndEmpty } from '../utils/commen'
 export default {
   data () {
     return {
@@ -82,6 +82,8 @@ export default {
     // 接口调用示例
     login().then(res => {})
     this.drawLine()
+    let a = 'null'
+    console.log(isNullAndEmpty(a))
   }
 }
 </script>

@@ -24,7 +24,7 @@ function isNullAndEmpty (param) {
       return true
     }
   } else if (typeof param === 'string') { // 字符串
-    if (param === undefined || param === null || param === '' || param === 'null') {
+    if (param === undefined || param === null || param.trim() === '') {
       return true
     } else {
       return false

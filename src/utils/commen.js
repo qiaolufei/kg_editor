@@ -15,22 +15,28 @@ function exportToExcel (id, name) {
   return wbout
 }
 
-// 判断字符、数组是否为空 空返回true
+// 判断字符、数组、对象是否为空 空返回true
 function isNullAndEmpty (param) {
-  if (param instanceof Array) {
+  if (param instanceof Array) { // 数组
     if (param.length > 0) {
       return false
     } else {
       return true
     }
-  } else {
+  } else if (typeof param === 'string') { // 字符串
     if (param === undefined || param === null || param === '' || param === 'null') {
       return true
     } else {
       return false
     }
+  } else if (Object.prototype.toString.call(param) === '[object Object]') { // 对象
+    for (var key in param) {
+      return false
+    }
+    return true
   }
 }
+
 export {
   exportToExcel,
   isNullAndEmpty

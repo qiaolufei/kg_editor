@@ -25,5 +25,10 @@
 	```
 - ##### commen.js
 	- 定义全局可调用的方法
-		- exportToExcel：导出Excel
-		- isNullAndEmpty： 判断字符串、数组、对象是否为空
+		- exportToExcel (id, name)：导出Excel
+		- isNullAndEmpty (param)： 判断字符串、数组、对象是否为空
+		- timeJS: 时间相关方法
+  		  - getNowTime (format)：获取当前时间，传入需要的格式
+  		  - timeToStamp (timestamp, format)：时间戳转为日期格式
+  		  - compareTime (startTime, endTime)：比较时间大小
+  		  - countdown (time)：计算时间差，可用于倒计时

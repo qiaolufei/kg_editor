@@ -2,7 +2,7 @@
 import FileSaver from 'file-saver'
 import XLSX from 'xlsx'
 // 导出表格
-function exportToExcel (id, name) {
+const exportToExcel = (id, name) => {
   var xlsxParam = { raw: true }
   var wb = XLSX.utils.table_to_book(document.querySelector(id), xlsxParam)
   var wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
@@ -16,7 +16,7 @@ function exportToExcel (id, name) {
 }
 
 // 判断字符、数组、对象是否为空 空返回true
-function isNullAndEmpty (param) {
+const isNullAndEmpty = (param) => {
   if (param instanceof Array) { // 数组
     if (param.length > 0) {
       return false
@@ -73,6 +73,16 @@ const timeJS = { // 时间相关方法
         return d.valueOf()
       case 'yyyy':
         return year
+      case 'MM':
+        return month
+      case 'dd':
+        return day
+      case 'hh':
+        return hour
+      case 'mm':
+        return minute
+      case 'ss':
+        return second
       case 'yyyy-MM':
         return year + '-' + month
       case 'yyyy年MM月':
@@ -81,6 +91,10 @@ const timeJS = { // 时间相关方法
         return month + '-' + day
       case 'MM月dd日':
         return month + '月' + day + '日'
+      case 'hh:mm':
+        return hour + ':' + minute
+      case 'hh:mm:ss':
+        return hour + ':' + minute + ':' + second
       case 'yyyy-MM-dd':
         return year + '-' + month + '-' + day
       case 'yyyy年MM月dd日':
@@ -189,6 +203,7 @@ const objectJS = {
     }
   }
 }
+
 export {
   exportToExcel,
   isNullAndEmpty,

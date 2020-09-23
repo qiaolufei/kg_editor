@@ -90,10 +90,14 @@ export default {
       name: '小明',
       age: 23,
       other: [1, 2, 3],
-      height: false
+      height: false,
+      info: {
+        height: 100,
+        weight: 64
+      }
     }
-    objectJS.clearValue(obj1)
-    console.log(obj1)
+    let obj2 = objectJS.deepClone(obj1)
+    console.log(obj2)
   }
 }
 </script>

@@ -166,28 +166,20 @@ const arrayJS = { // 数组相关方法
 }
 
 const objectJS = {
-  cloneObject (target, source) { // 深拷贝对象
-    var names = Object.getOwnPropertyNames(source) // 获取对象的所有属性名
-    for (var i = 0; i < names.length; i++) {
-      var desc = Object.getOwnPropertyDescriptor(source, names[i])
-      if (typeof (desc.value) === 'object' && desc.value !== null) {
-        var obj
-        if (Array.isArray(desc.value)) {
-          obj = []
-        } else {
-          obj = {}
-        }
-        Object.defineProperty(target, names[i], {
-          configurable: desc.configurable, // 不可删除
-          enumerable: desc.enumerable, // 是否可遍历
-          value: obj, // 值
-          writable: desc.writable // 是否可修改
-        })
-        this.cloneObject(obj, desc.value)
-      } else {
-        Object.defineProperty(target, names[i], desc)
+  deepClone (obj, hash = new WeakMap()) {
+    if (obj === null) return obj
+    if (obj instanceof Date) return new Date(obj)
+    if (obj instanceof RegExp) return new RegExp(obj)
+    if (typeof obj !== 'object') return obj
+    if (hash.get(obj)) return hash.get(obj)
+    let cloneObj = new obj.constructor()
+    hash.set(obj, cloneObj)
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        cloneObj[key] = this.deepClone(obj[key], hash)
       }
     }
+    return cloneObj
   },
   clearValue (obj) { // 清空所有value(string为''/Array为[]/Number为0/Boolean为true)
     for (let key in obj) {

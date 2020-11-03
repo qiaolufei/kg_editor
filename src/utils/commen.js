@@ -165,8 +165,8 @@ const arrayJS = { // 数组相关方法
   }
 }
 
-const objectJS = {
-  deepClone (obj, hash = new WeakMap()) {
+const objectJS = { // 对象相关方法
+  deepClone (obj, hash = new WeakMap()) { // 深拷贝对象
     if (obj === null) return obj
     if (obj instanceof Date) return new Date(obj)
     if (obj instanceof RegExp) return new RegExp(obj)

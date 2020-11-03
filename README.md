@@ -1,6 +1,8 @@
 #### VueTemplate
 > 基于Vue.js 2.9.6搭建，引入多个插件，实现快速进入项目开发状态，多个用法在项目中都有示例。
 ##### 引入的插件
+- ##### Vuex  https://www.npmjs.com/package/vuex
+    - 新建store/store.js,有简单的state、mutations、actions、getters示例
 - ##### Axios http://www.axios-js.com/
 	- 在utils/http.js里进行二次封装get、post、delete、put方法，在api.js里统一管理请求。(参考 https://www.cnblogs.com/chaoyuehedy/p/9931146.html )
 - ##### qs https://www.npmjs.com/package/qs

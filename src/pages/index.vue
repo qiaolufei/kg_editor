@@ -1,153 +1,245 @@
 <template>
-  <div>
-    <headpage></headpage>
-    <div class="index">
-      <div class="index__store">
-        <el-divider content-position="left">store演示</el-divider>
-        store中的name值：{{ this.$store.state.name }}
-        <br><br>
-        <el-input v-model="name1" size="small" style="width:30%" placeholder="name"></el-input>
-        <el-button type="primary" size="small" @click="changeName">同步改变name</el-button>
-        <br><br>
-        <el-input v-model="name2" size="small" style="width:30%" placeholder="name"></el-input>
-        <el-button type="primary" size="small" @click="changeNameAsync">异步改变name</el-button>
-        <br><br>
-        getter得到的数据：{{this.$store.getters.customFormatterName('您好！')}}
+  <div class="index">
+    <v-app>
+      <Toolbar></Toolbar>
+      <div class="index__main">
+        <div
+          ref="G6"
+          id="G6"
+          class="index__main-left"
+          :style="{ width: drawer ? '78%' : '100%' }"
+        ></div>
+        <div
+          class="index__main-right__pot"
+          :style="{ right: !drawer ? '-1vw' : '22.2%' }"
+          @click="drawer = !drawer"
+        ></div>
+        <div class="index__main-right" :style="{ width: drawer ? '25%' : '0' }">
+          <Sidebar ref="sidebar" :selectedNodeId="selectedNodeId"></Sidebar>
+        </div>
       </div>
-      <div class="index__chart">
-      <div id="myChart" :style="{ width: '300px', height: '280px' }"></div>
-      <el-button v-print="'#myChart'">打印</el-button>
-      </div>
-      <div class="index__table">
-      <el-table id="table" border :data="tableData" style="width: 50%">
-        <el-table-column prop="date" label="日期" width="180">
-        </el-table-column>
-        <el-table-column prop="name" label="姓名" width="180">
-        </el-table-column>
-        <el-table-column prop="address" label="地址"> </el-table-column>
-      </el-table>
-      <el-button type="primary" @click="exportInfo">导出EXCEL</el-button>
-      </div>
-    </div>
+    </v-app>
   </div>
 </template>
 <script>
-import headpage from '@/components/header'
-import { login } from '../utils/api'
-import {
-  exportToExcel,
-  isNullAndEmpty,
-  timeJS,
-  arrayJS,
-  objectJS
-} from '../utils/commen'
+import Toolbar from '@/components/toolbar'
+import Sidebar from '@/components/sidebar'
+import G6 from '@antv/g6'
 export default {
-  data () {
-    return {
-      name1: '路非',
-      name2: '',
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }
-      ]
-    }
-  },
   components: {
-    headpage
+    Toolbar,
+    Sidebar
+  },
+  // computed: {
+  //   dataListChange () {
+  //     return this.$store.state.dataList.nodes
+  //   }
+  // },
+  // watch: {
+  //   dataListChange () {
+  //     this.graph.destroy() // 销毁画布
+  //     this.initG6()
+  //   }
+  // },
+  data: () => ({
+    drawer: true,
+    graph: '',
+    selectedNodeId: ''
+  }),
+  mounted () {
+    this.initG6()
   },
   methods: {
-    exportInfo () {
-      exportToExcel('#table', '样例')
-    },
-    changeName () {
-      this.$store.commit('changeNameWithParam', {
-        name: this.name1
-      })
-    },
-    changeNameAsync () {
-      this.$store.dispatch('changeNameWithParamAsync', {
-        name: this.name2
-      })
-    },
-    drawLine () {
-      var myChart = this.$echarts.init(document.getElementById('myChart'))
-      myChart.setOption({
-        title: {
-          text: 'ECharts 入门示例'
-        },
-        tooltip: {},
-        xAxis: {
-          data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
-        },
-        yAxis: {},
-        series: [
-          {
-            name: '销量',
-            type: 'bar',
-            data: [5, 20, 36, 10, 10, 20]
+    initG6 () {
+      let _this = this
+      G6.registerBehavior('click-add-node', {
+        getDefaultCfg () {
+          return {
+            trigger: 'shift'
           }
+        },
+        // 双击添加节点
+        getEvents () {
+          return {
+            'canvas:dblclick': 'onClick'
+          }
+        },
+        onClick (ev) {
+          let obj = {
+            id: String(_this.$store.state.dataList.nodes.length + 1),
+            label: String(_this.$store.state.dataList.nodes.length + 1),
+            x: ev.canvasX,
+            y: ev.canvasY
+          }
+          this.graph.addItem('node', obj)
+          _this.$store.commit('addNode', {
+            obj: obj
+          })
+        }
+      })
+      G6.registerBehavior('click-add-edge', {
+        // 添加连线
+        getEvents () {
+          return {
+            'node:click': 'onClick',
+            mousemove: 'onMousemove',
+            'edge:click': 'onEdgeClick' // 点击空白处，取消边
+          }
+        },
+        onClick (ev) {
+          const node = ev.item
+          const graph = this.graph
+          const point = {
+            x: ev.x,
+            y: ev.y
+          }
+          const model = node.getModel()
+          if (this.addingEdge && this.edge) {
+            graph.updateItem(this.edge, {
+              target: model.id
+            })
+            this.edge = null
+            this.addingEdge = false
+          } else {
+            let obj = {
+              source: model.id,
+              target: point
+            }
+            this.edge = graph.addItem('edge', obj)
+            _this.$store.commit('addEdge', {
+              obj: obj
+            })
+            this.addingEdge = true
+          }
+        },
+        onMousemove (ev) {
+          const point = {
+            x: ev.x,
+            y: ev.y
+          }
+          if (this.addingEdge && this.edge) {
+            this.graph.updateItem(this.edge, {
+              target: point
+            })
+          }
+        },
+        onEdgeClick (ev) {
+          const currentEdge = ev.item
+          // 拖拽过程中，点击会点击到新增的边上
+          if (this.addingEdge && this.edge === currentEdge) {
+            this.graph.removeItem(this.edge)
+            this.edge = null
+            this.addingEdge = false
+          }
+        }
+      })
+      // 缩略图
+      let minimap = new G6.Minimap({
+        container: this.$refs.sidebar.$refs.minimap,
+        size: [
+          this.$refs.sidebar.$refs.minimap.offsetWidth - 80,
+          this.$refs.sidebar.$refs.minimap.offsetHeight
         ]
       })
+      this.graph = new G6.Graph({
+        container: 'G6',
+        width: this.$refs.G6.offsetWidth,
+        height: this.$refs.G6.offsetHeight,
+        plugins: [minimap],
+        layout: {
+          type: 'force',
+          nodeStrength: -30,
+          preventOverlap: true,
+          nodeSize: 40,
+          edgeStrength: 0.1,
+          linkDistance: 100
+        },
+        modes: {
+          default: [
+            'zoom-canvas', // 缩放canvas
+            'drag-canvas', // 拖拽canvas
+            {
+              type: 'drag-node' // 拖拽node
+            },
+            'click-add-node',
+            'click-add-edge',
+            'click-select',
+            'activate-relations'
+          ]
+        },
+        defaultNode: {
+          size: [80, 80],
+          color: '#409eff'
+        },
+        defaultEdge: {
+          size: 1,
+          color: '#409eff',
+          style: {
+            endArrow: true,
+            startArrow: false
+          }
+        },
+        nodeStateStyles: {
+          selected: {
+            stroke: '#fff',
+            lineWidth: 1,
+            fill: 'steelblue'
+          }
+        }
+      })
+      this.graph.data(this.$store.state.dataList)
+      this.graph.render()
+      // 点击节点
+      this.graph.on('nodeselectchange', (e) => {
+        this.selectedNodeId = e.select ? e.selectedItems.nodes[0]._cfg.id : ''
+      })
+      this.graph.on('node:dragend', function (ev) {
+        let itemModel = ev.item.getModel()
+        itemModel.fixed = true
+        itemModel.fx = ev.x
+        itemModel.fy = ev.y
+      })
     }
-  },
-  mounted () {
-    // 接口调用示例
-    login().then((res) => {})
-    this.drawLine()
-    let a = 'null'
-    console.log(isNullAndEmpty(a))
-    console.log(timeJS.countdown('2020-8-6 15:10'))
-    console.log(arrayJS.arrOperation([1, 2, 3], [2, 5, 6], 4))
-    let obj1 = {
-      name: '小明',
-      age: 23,
-      other: [1, 2, 3],
-      height: false,
-      info: {
-        height: 100,
-        weight: 64
-      }
-    }
-    let obj2 = objectJS.deepClone(obj1)
-    console.log(obj2)
   }
 }
 </script>
 <style lang="less" scoped>
-.index{
-  display: flex;
-  flex-direction: row;
-  box-sizing: border-box;
-  flex-wrap: wrap;
-  padding: 2% 2%;
-  &__store, &__chart{
-    height: 20rem;
-    width: 20rem;
-    border: 1px solid #3333;
-    border-radius: 5px;
-    margin-left: 20px;
-  }
-  &__table{
+.index {
+  width: 100%;
+  &__main {
     width: 100%;
-    margin: 20px 20px;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    &-left {
+      height: 88vh;
+      border: 2px solid #3333;
+      margin: 2vw 2vw 0 2vw;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+    }
+    &-right {
+      height: 90vh;
+      border: 1px solid #3333;
+      margin-top: 30px;
+      overflow-y: scroll;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+      &__pot {
+        position: absolute;
+        width: 2vw;
+        height: 2vw;
+        background: #35495e;
+        border-radius: 1vw;
+        clip: rect(0px 1vw 2vw 0px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+        top: 50%;
+        cursor: pointer;
+        z-index: 1000 !important;
+      }
+      &__pot:hover {
+        background: #dcdfe6;
+      }
+    }
   }
 }
 </style>

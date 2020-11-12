@@ -5,13 +5,19 @@ Vue.use(Vuex)
 
 // 状态
 const state = {
-  name: 'luffy'
+  dataList: {
+    nodes: [],
+    edges: []
+  }
 }
 
 // 更改状态(不包含异步操作)
 const mutations = {
-  changeNameWithParam (state, param) {
-    state.name = param.name
+  addNode (state, param) { // 添加节点
+    state.dataList.nodes.push(param.obj)
+  },
+  addEdge (state, param) { // 添加连线
+    state.dataList.edges.push(param.obj)
   }
 }
 

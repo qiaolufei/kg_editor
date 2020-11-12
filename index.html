@@ -3,7 +3,27 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>my_vue_demo</title>
+    <title>G6_editor</title>
+    <style>
+      /* ::-webkit-scrollbar{
+        display:none;
+      } */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+    /*定义滚动条轨道 内阴影+圆角*/
+    ::-webkit-scrollbar-track {
+      border-radius: 8px;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /*定义滑块 内阴影+圆角*/
+    ::-webkit-scrollbar-thumb {
+      border-radius: 8px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+      background-color: #35495e;
+    }
+    </style>
   </head>
   <body>
     <div id="app"></div>

@@ -9,13 +9,13 @@
           class="index__main-left"
           :style="{ width: drawer ? '78%' : '100%' }"
         ></div>
-        <div
+        <!-- <div
           class="index__main-right__pot"
           :style="{ right: !drawer ? '-1vw' : '22.2%' }"
           @click="drawer = !drawer"
-        ></div>
+        ></div> -->
         <div class="index__main-right" :style="{ width: drawer ? '25%' : '0' }">
-          <Sidebar ref="sidebar" :selectedNodeId="selectedNodeId"></Sidebar>
+          <Sidebar ref="sidebar" :graph="graph" :selectedNodeId="selectedNodeId"></Sidebar>
         </div>
       </div>
     </v-app>
@@ -25,119 +25,43 @@
 import Toolbar from '@/components/toolbar'
 import Sidebar from '@/components/sidebar'
 import G6 from '@antv/g6'
+import defaultNode from '@/default/default_node'
+import defaultEdge from '@/default/default_edge'
+import addNode from '@/actions/add_node'
+import hoverNode from '@/actions/hover_node'
+import addEdge from '@/actions/add_edge'
 export default {
   components: {
     Toolbar,
     Sidebar
   },
-  // computed: {
-  //   dataListChange () {
-  //     return this.$store.state.dataList.nodes
-  //   }
-  // },
-  // watch: {
-  //   dataListChange () {
-  //     this.graph.destroy() // 销毁画布
-  //     this.initG6()
-  //   }
-  // },
   data: () => ({
     drawer: true,
-    graph: '',
-    selectedNodeId: ''
+    graph: null,
+    selectedNodeId: '',
+    item: {},
+    addingEdge: true,
+    edge: null
   }),
   mounted () {
     this.initG6()
   },
   methods: {
+    nodeChange1 () {
+      this.graph.updateItem(this.node.id, this.node)
+      this.$store.commit('updateNode', this.node)
+    },
     initG6 () {
-      let _this = this
-      G6.registerBehavior('click-add-node', {
-        getDefaultCfg () {
-          return {
-            trigger: 'shift'
-          }
-        },
-        // 双击添加节点
-        getEvents () {
-          return {
-            'canvas:dblclick': 'onClick'
-          }
-        },
-        onClick (ev) {
-          let obj = {
-            id: String(_this.$store.state.dataList.nodes.length + 1),
-            label: String(_this.$store.state.dataList.nodes.length + 1),
-            x: ev.canvasX,
-            y: ev.canvasY
-          }
-          this.graph.addItem('node', obj)
-          _this.$store.commit('addNode', {
-            obj: obj
-          })
-        }
-      })
-      G6.registerBehavior('click-add-edge', {
-        // 添加连线
-        getEvents () {
-          return {
-            'node:click': 'onClick',
-            mousemove: 'onMousemove',
-            'edge:click': 'onEdgeClick' // 点击空白处，取消边
-          }
-        },
-        onClick (ev) {
-          const node = ev.item
-          const graph = this.graph
-          const point = {
-            x: ev.x,
-            y: ev.y
-          }
-          const model = node.getModel()
-          if (this.addingEdge && this.edge) {
-            graph.updateItem(this.edge, {
-              target: model.id
-            })
-            this.edge = null
-            this.addingEdge = false
-          } else {
-            let obj = {
-              source: model.id,
-              target: point
-            }
-            this.edge = graph.addItem('edge', obj)
-            _this.$store.commit('addEdge', {
-              obj: obj
-            })
-            this.addingEdge = true
-          }
-        },
-        onMousemove (ev) {
-          const point = {
-            x: ev.x,
-            y: ev.y
-          }
-          if (this.addingEdge && this.edge) {
-            this.graph.updateItem(this.edge, {
-              target: point
-            })
-          }
-        },
-        onEdgeClick (ev) {
-          const currentEdge = ev.item
-          // 拖拽过程中，点击会点击到新增的边上
-          if (this.addingEdge && this.edge === currentEdge) {
-            this.graph.removeItem(this.edge)
-            this.edge = null
-            this.addingEdge = false
-          }
-        }
-      })
+      G6.registerBehavior('hover-node', hoverNode)
+      // 双击添加节点
+      G6.registerBehavior('click-add-node', addNode)
+      // 添加连线
+      G6.registerBehavior('click-add-edge', addEdge)
       // 缩略图
       let minimap = new G6.Minimap({
         container: this.$refs.sidebar.$refs.minimap,
         size: [
-          this.$refs.sidebar.$refs.minimap.offsetWidth - 80,
+          this.$refs.sidebar.$refs.minimap.offsetWidth - 8,
           this.$refs.sidebar.$refs.minimap.offsetHeight
         ]
       })
@@ -156,34 +80,32 @@ export default {
         },
         modes: {
           default: [
+            'hover-node',
             'zoom-canvas', // 缩放canvas
             'drag-canvas', // 拖拽canvas
             {
               type: 'drag-node' // 拖拽node
             },
             'click-add-node',
-            'click-add-edge',
             'click-select',
+            'activate-relations'
+          ],
+          addEdge: [
+            'click-add-edge',
+            'hover-node',
+            'zoom-canvas',
+            'drag-canvas',
+            'click-add-node',
             'activate-relations'
           ]
         },
-        defaultNode: {
-          size: [80, 80],
-          color: '#409eff'
-        },
-        defaultEdge: {
-          size: 1,
-          color: '#409eff',
-          style: {
-            endArrow: true,
-            startArrow: false
-          }
-        },
+        defaultNode: defaultNode,
+        defaultEdge: defaultEdge,
         nodeStateStyles: {
           selected: {
-            stroke: '#fff',
+            stroke: '#409eff',
             lineWidth: 1,
-            fill: 'steelblue'
+            fill: '#409eff'
           }
         }
       })
@@ -191,13 +113,15 @@ export default {
       this.graph.render()
       // 点击节点
       this.graph.on('nodeselectchange', (e) => {
+        this.item = e
         this.selectedNodeId = e.select ? e.selectedItems.nodes[0]._cfg.id : ''
       })
-      this.graph.on('node:dragend', function (ev) {
-        let itemModel = ev.item.getModel()
+      // 拖动节点
+      this.graph.on('node:dragend', (e) => {
+        let itemModel = e.item.getModel()
         itemModel.fixed = true
-        itemModel.fx = ev.x
-        itemModel.fy = ev.y
+        itemModel.fx = e.x
+        itemModel.fy = e.y
       })
     }
   }
@@ -219,9 +143,9 @@ export default {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
     }
     &-right {
-      height: 90vh;
+      height: 88vh;
       border: 1px solid #3333;
-      margin-top: 30px;
+      margin-top: 2vw;
       overflow-y: scroll;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
       &__pot {

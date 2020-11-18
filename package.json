@@ -1,7 +1,7 @@
 {
-  "name": "kgkg",
+  "name": "knowledge-graph-editor",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "A knowledge-graph-editor for users",
   "author": "luffy <luffy0101@163.com>",
   "private": true,
   "scripts": {

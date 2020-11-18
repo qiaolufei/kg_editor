@@ -1,14 +1,14 @@
 <template>
   <div>
     <v-app>
-      <v-expansion-panels multiple tile v-model="bigPanels">
+      <v-expansion-panels multiple tile class="panel" v-model="bigPanels">
         <v-expansion-panel>
           <v-expansion-panel-header style="font-weight: bold">
             配置器
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-expansion-panels multiple tile v-model="littlePanels" accordion>
-              <v-expansion-panel tile>
+            <v-expansion-panels multiple tile class="littlepanel" v-model="littlePanels" accordion>
+              <!-- <v-expansion-panel tile>
                 <v-expansion-panel-header> 位置 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <div>
@@ -32,21 +32,24 @@
                     </el-row>
                   </div>
                 </v-expansion-panel-content>
-              </v-expansion-panel>
+              </v-expansion-panel> -->
               <v-expansion-panel tile>
                 <v-expansion-panel-header> 样式 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <el-row type="flex" :gutter="20">
                     <el-col :span="12"
-                      >半径：<el-input
-                        style="width: 60%"
+                      >&emsp;&emsp;半径：<el-input
+                        @input="nodeChange"
+                        v-model="radius"
+                        style="width: 40%"
                         type="number"
                         size="mini"
                       ></el-input
                     ></el-col>
                     <el-col :span="12"
                       >背景颜色：<el-color-picker
-                        v-model="node.color"
+                        @change="nodeChange"
+                        v-model="node.style.fill"
                         style="vertical-align: top"
                         size="mini"
                         show-alpha
@@ -55,18 +58,61 @@
                   </el-row>
                   <el-row type="flex" :gutter="20">
                     <el-col :span="12"
-                      >边框：<el-input
-                        style="width: 60%"
+                      >边框宽度：<el-input
+                        @input="nodeChange"
+                        v-model="node.style.lineWidth"
+                        style="width: 40%"
                         type="number"
                         size="mini"
                       ></el-input
                     ></el-col>
                     <el-col :span="12"
                       >边框颜色：<el-color-picker
+                      @change="nodeChange"
+                      v-model="node.style.stroke"
                         style="vertical-align: top"
                         size="mini"
                       ></el-color-picker>
                     </el-col>
+                  </el-row>
+                  <el-row type="flex" :gutter="20">
+                    <el-col :span="12"
+                      >阴影颜色：<el-color-picker
+                      @change="nodeChange"
+                      v-model="node.style.shadowColor"
+                        style="vertical-align: top"
+                        size="mini"
+                      ></el-color-picker>
+                    </el-col>
+                    <el-col :span="12"
+                      >阴影范围：<el-input
+                        @input="nodeChange"
+                        v-model="node.style.shadowBlur"
+                        style="width: 40%"
+                        type="number"
+                        size="mini"
+                      ></el-input
+                    ></el-col>
+                  </el-row>
+                  <el-row type="flex" :gutter="20">
+                    <el-col :span="12"
+                      >X&nbsp;偏移量：<el-input
+                        @input="nodeChange"
+                        v-model="node.style.shadowOffsetX"
+                        style="width: 40%"
+                        type="number"
+                        size="mini"
+                      ></el-input
+                    ></el-col>
+                    <el-col :span="12"
+                      >Y&nbsp;偏移量：<el-input
+                        @input="nodeChange"
+                        v-model="node.style.shadowOffsetY"
+                        style="width: 40%"
+                        type="number"
+                        size="mini"
+                      ></el-input
+                    ></el-col>
                   </el-row>
                 </v-expansion-panel-content>
               </v-expansion-panel>
@@ -75,12 +121,14 @@
                 <v-expansion-panel-content>
                   <el-row type="flex" :gutter="20">
                     <el-col :span="24"
-                      >内容：<el-input v-model="node.label" style="width: 80%" size="mini"></el-input
+                      >内容：<el-input @input="nodeChange" v-model="node.label" style="width: 81%" size="mini"></el-input
                     ></el-col>
                   </el-row>
                   <el-row type="flex" :gutter="20">
                     <el-col :span="12"
                       >大小：<el-input
+                        @input="nodeChange"
+                        v-model="node.labelCfg.style.fontSize"
                         style="width: 60%"
                         size="mini"
                         type="number"
@@ -88,6 +136,11 @@
                     ></el-col>
                     <el-col :span="12"
                       >粗细：<el-input
+                        @input="nodeChange"
+                        v-model="node.labelCfg.style.fontWeight"
+                        :min="100"
+                        :max="900"
+                        :step="100"
                         style="width: 60%"
                         size="mini"
                         type="number"
@@ -97,13 +150,16 @@
                   <el-row type="flex" :gutter="20">
                     <el-col :span="12"
                       >颜色：<el-color-picker
+                        @change="nodeChange"
+                        v-model="node.labelCfg.style.fill"
                         style="vertical-align: top"
                         size="mini"
                       ></el-color-picker>
                     </el-col>
                     <el-col :span="12"
                       >定位：<el-select
-                        v-model="fontPlace"
+                      @change="nodeChange"
+                        v-model="node.labelCfg.position"
                         style="width: 60%"
                         size="mini"
                       >
@@ -135,7 +191,16 @@
 </template>
 <script>
 export default {
-  props: ['selectedNodeId'],
+  props: {
+    selectedNodeId: { // 选中节点ID
+      type: String,
+      default: ''
+    },
+    graph: {
+      type: Object,
+      default: () => {}
+    }
+  },
   watch: {
     selectedNodeId: {
       handler (newVal, oldVal) {
@@ -144,30 +209,47 @@ export default {
             return item.id === newVal
           })
           this.node = nodeArr[0]
+          this.radius = nodeArr[0].size[0] / 2
         }
       }
     }
   },
   data: () => ({
-    fontPlace: '居中',
-    placeList: ['居中', '上', '下', '左', '右'],
+    placeList: ['center', 'top', 'bottom', 'left', 'right'],
     bigPanels: [0, 1],
     littlePanels: [0, 1, 2],
+    radius: '',
     node: {
+      style: {},
+      labelCfg: {
+        style: {}
+      }
     }
-  })
+  }),
+  methods: {
+    nodeChange () {
+      this.node.size = [this.radius * 2, this.radius * 2]
+      this.graph.updateItem(this.node.id, this.node)
+      this.$store.commit('updateNode', this.node)
+    }
+  }
 }
 </script>
 <style lang="less" scoped>
 .g6-minimap {
   width: 100%;
   height: 20vw;
-  border: 1px solid #35495e;
+  border: 1px solid #35495e
 }
 /deep/ .el-col-12 {
   margin-top: 5px;
 }
 /deep/ .panel .v-expansion-panel-content__wrap {
-  padding: 0 0 10px 0;
+  padding: 0 3px 10px 3px;
+  box-sizing: border-box;
+}
+/deep/ .littlepanel .v-expansion-panel-content__wrap {
+  padding: 0 10px 10px 20px;
+  box-sizing: border-box;
 }
 </style>

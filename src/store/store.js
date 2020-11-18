@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-// 状态
 const state = {
   dataList: {
     nodes: [],
@@ -11,36 +10,41 @@ const state = {
   }
 }
 
-// 更改状态(不包含异步操作)
 const mutations = {
   addNode (state, param) { // 添加节点
-    state.dataList.nodes.push(param.obj)
+    state.dataList.nodes.push(param)
   },
   addEdge (state, param) { // 添加连线
-    state.dataList.edges.push(param.obj)
-  }
-}
-
-// 异步更改状态
-const actions = {
-  changeNameWithParamAsync (context, param) {
-    setTimeout(() => {
-      context.commit('changeNameWithParam', param)
-    }, 1000)
-  }
-}
-
-// state的派生状态(相当于一种计算属性)
-const getters = {
-  customFormatterName: (state) => (val) => {
-    let postfix = ''
-    if (state.name === '路非') {
-      postfix = val
-    }
-    return state.name + postfix
+    state.dataList.edges.push(param)
+  },
+  deleteNode (state, param) { // 删除节点
+    let index = state.dataList.nodes.findIndex(function (value) {
+      return value.id === param.id
+    })
+    state.dataList.nodes.splice(index, 1)
+  },
+  deleteEdge (state, param) { // 删除连线
+    let index = state.dataList.edges.findIndex(function (value) {
+      return value.id === param.id
+    })
+    state.dataList.edges.splice(index, 1)
+  },
+  updateNode (state, param) { // 更新节点
+    state.dataList.nodes.forEach((item, index) => {
+      if (item.id === param.id) {
+        state.dataList.nodes[index] = param
+      }
+    })
+  },
+  updateEdge (state, param) { // 更新节点
+    state.dataList.edges.forEach((item, index) => {
+      if (item.id === param.id) {
+        state.dataList.edges[index] = param
+      }
+    })
   }
 }
 
 export default new Vuex.Store({
-  state, mutations, actions, getters
+  state, mutations
 })

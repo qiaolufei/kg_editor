@@ -7,7 +7,14 @@
             配置器
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-expansion-panels multiple tile class="littlepanel" v-model="littlePanels" accordion>
+            <v-expansion-panels
+              v-if="selectedNodeId"
+              multiple
+              tile
+              class="littlepanel"
+              v-model="littlePanels"
+              accordion
+            >
               <!-- <v-expansion-panel tile>
                 <v-expansion-panel-header> 位置 </v-expansion-panel-header>
                 <v-expansion-panel-content>
@@ -34,7 +41,7 @@
                 </v-expansion-panel-content>
               </v-expansion-panel> -->
               <v-expansion-panel tile>
-                <v-expansion-panel-header> 样式 </v-expansion-panel-header>
+                <v-expansion-panel-header> 节点样式 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <el-row type="flex" :gutter="20">
                     <el-col :span="12"
@@ -68,8 +75,8 @@
                     ></el-col>
                     <el-col :span="12"
                       >边框颜色：<el-color-picker
-                      @change="nodeChange"
-                      v-model="node.style.stroke"
+                        @change="nodeChange"
+                        v-model="node.style.stroke"
                         style="vertical-align: top"
                         size="mini"
                       ></el-color-picker>
@@ -78,8 +85,8 @@
                   <el-row type="flex" :gutter="20">
                     <el-col :span="12"
                       >阴影颜色：<el-color-picker
-                      @change="nodeChange"
-                      v-model="node.style.shadowColor"
+                        @change="nodeChange"
+                        v-model="node.style.shadowColor"
                         style="vertical-align: top"
                         size="mini"
                       ></el-color-picker>
@@ -117,11 +124,16 @@
                 </v-expansion-panel-content>
               </v-expansion-panel>
               <v-expansion-panel tile>
-                <v-expansion-panel-header> 文本 </v-expansion-panel-header>
+                <v-expansion-panel-header> 节点文本 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <el-row type="flex" :gutter="20">
                     <el-col :span="24"
-                      >内容：<el-input @input="nodeChange" v-model="node.label" style="width: 81%" size="mini"></el-input
+                      >内容：<el-input
+                        @input="nodeChange"
+                        v-model="node.label"
+                        style="width: 81%"
+                        size="mini"
+                      ></el-input
                     ></el-col>
                   </el-row>
                   <el-row type="flex" :gutter="20">
@@ -158,13 +170,141 @@
                     </el-col>
                     <el-col :span="12"
                       >定位：<el-select
-                      @change="nodeChange"
+                        @change="nodeChange"
                         v-model="node.labelCfg.position"
                         style="width: 60%"
                         size="mini"
                       >
                         <el-option
                           v-for="item in placeList"
+                          :key="item"
+                          :label="item"
+                          :value="item"
+                        >
+                        </el-option> </el-select
+                    ></el-col>
+                  </el-row>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+            <v-expansion-panels
+              v-if="selectedEdgeId"
+              multiple
+              tile
+              class="littlepanel"
+              v-model="littlePanels"
+              accordion
+            >
+              <v-expansion-panel tile>
+                <v-expansion-panel tile>
+                  <v-expansion-panel-header>
+                    连线样式
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <el-row type="flex" :gutter="20">
+                    <el-col :span="12"
+                      >类型：<el-select
+                        @change="edgeChange"
+                        v-model="edge.type"
+                        style="width: 60%"
+                        size="mini"
+                      >
+                        <el-option
+                          v-for="item in lineList"
+                          :key="item"
+                          :label="item"
+                          :value="item"
+                        >
+                        </el-option> </el-select
+                    ></el-col>
+                  </el-row>
+                    <el-row type="flex" :gutter="20">
+                      <el-col :span="12"
+                        >宽度：<el-input
+                          @input="edgeChange"
+                          v-model="edge.style.lineWidth"
+                          style="width: 40%"
+                          type="number"
+                          size="mini"
+                        ></el-input
+                      ></el-col>
+                      <el-col :span="12"
+                        >颜色：<el-color-picker
+                          @change="edgeChange"
+                          v-model="edge.style.stroke"
+                          style="vertical-align: top"
+                          size="mini"
+                        ></el-color-picker>
+                      </el-col>
+                    </el-row>
+                    <!-- <el-row type="flex" :gutter="20">
+                      <el-col :span="12"
+                        ><el-checkbox-group @change="edgeChange" v-model="edge.style.startArrow">
+                          <el-checkbox
+                            label="开始箭头"
+                          ></el-checkbox> </el-checkbox-group
+                      ></el-col>
+                      <el-col :span="12"
+                        ><el-checkbox-group @change="edgeChange" v-model="edge.style.endArrow">
+                          <el-checkbox label="结束箭头"></el-checkbox>
+                        </el-checkbox-group>
+                      </el-col>
+                    </el-row> -->
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+                <v-expansion-panel-header> 连线文本 </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <el-row type="flex" :gutter="20">
+                    <el-col :span="24"
+                      >内容：<el-input
+                        @input="edgeChange"
+                        v-model="edge.label"
+                        style="width: 81%"
+                        size="mini"
+                      ></el-input
+                    ></el-col>
+                  </el-row>
+                  <el-row type="flex" :gutter="20">
+                    <el-col :span="12"
+                      >大小：<el-input
+                        @input="edgeChange"
+                        v-model="edge.labelCfg.style.fontSize"
+                        style="width: 60%"
+                        size="mini"
+                        type="number"
+                      ></el-input
+                    ></el-col>
+                    <el-col :span="12"
+                      >粗细：<el-input
+                        @input="edgeChange"
+                        v-model="edge.labelCfg.style.fontWeight"
+                        :min="100"
+                        :max="900"
+                        :step="100"
+                        style="width: 60%"
+                        size="mini"
+                        type="number"
+                      ></el-input
+                    ></el-col>
+                  </el-row>
+                  <el-row type="flex" :gutter="20">
+                    <el-col :span="12"
+                      >颜色：<el-color-picker
+                        @change="edgeChange"
+                        v-model="edge.labelCfg.style.fill"
+                        style="vertical-align: top"
+                        size="mini"
+                      ></el-color-picker>
+                    </el-col>
+                    <el-col :span="12"
+                      >定位：<el-select
+                        @change="edgeChange"
+                        v-model="edge.labelCfg.position"
+                        style="width: 60%"
+                        size="mini"
+                      >
+                        <el-option
+                          v-for="item in placeList1"
                           :key="item"
                           :label="item"
                           :value="item"
@@ -192,7 +332,11 @@
 <script>
 export default {
   props: {
-    selectedNodeId: { // 选中节点ID
+    selectedNodeId: {
+      type: String,
+      default: ''
+    },
+    selectedEdgeId: {
       type: String,
       default: ''
     },
@@ -202,6 +346,18 @@ export default {
     }
   },
   watch: {
+    selectedEdgeId: {
+      handler (newVal, oldVal) {
+        console.log('.......')
+        console.log(newVal)
+        if (newVal !== '') {
+          let edgeArr = this.$store.state.dataList.edges.filter((item) => {
+            return item.id === newVal
+          })
+          this.edge = edgeArr[0]
+        }
+      }
+    },
     selectedNodeId: {
       handler (newVal, oldVal) {
         if (newVal !== '') {
@@ -215,11 +371,19 @@ export default {
     }
   },
   data: () => ({
+    lineList: ['line', 'polyline', 'arc', 'quardratic', 'cubic', 'cubic-horizontal'],
     placeList: ['center', 'top', 'bottom', 'left', 'right'],
+    placeList1: ['start', 'middle', 'end'],
     bigPanels: [0, 1],
-    littlePanels: [0, 1, 2],
+    littlePanels: [0, 1],
     radius: '',
     node: {
+      style: {},
+      labelCfg: {
+        style: {}
+      }
+    },
+    edge: {
       style: {},
       labelCfg: {
         style: {}
@@ -231,6 +395,10 @@ export default {
       this.node.size = [this.radius * 2, this.radius * 2]
       this.graph.updateItem(this.node.id, this.node)
       this.$store.commit('updateNode', this.node)
+    },
+    edgeChange () {
+      this.graph.updateItem(this.edge.id, this.edge)
+      this.$store.commit('updateEdge', this.edge)
     }
   }
 }
@@ -239,7 +407,7 @@ export default {
 .g6-minimap {
   width: 100%;
   height: 20vw;
-  border: 1px solid #35495e
+  border: 1px solid #35495e;
 }
 /deep/ .el-col-12 {
   margin-top: 5px;

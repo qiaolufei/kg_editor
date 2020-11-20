@@ -15,7 +15,7 @@
           @click="drawer = !drawer"
         ></div> -->
         <div class="index__main-right" :style="{ width: drawer ? '25%' : '0' }">
-          <Sidebar ref="sidebar" :graph="graph" :selectedNodeId="selectedNodeId"></Sidebar>
+          <Sidebar ref="sidebar" :graph="graph" :selectedNodeId="selectedNodeId" :selectedEdgeId="selectedEdgeId"></Sidebar>
         </div>
       </div>
     </v-app>
@@ -30,6 +30,7 @@ import defaultEdge from '@/default/default_edge'
 import addNode from '@/actions/add_node'
 import hoverNode from '@/actions/hover_node'
 import addEdge from '@/actions/add_edge'
+import selectEdge from '@/actions/select_edge'
 export default {
   components: {
     Toolbar,
@@ -39,6 +40,7 @@ export default {
     drawer: true,
     graph: null,
     selectedNodeId: '',
+    selectedEdgeId: '',
     item: {},
     addingEdge: true,
     edge: null
@@ -57,6 +59,7 @@ export default {
       G6.registerBehavior('click-add-node', addNode)
       // 添加连线
       G6.registerBehavior('click-add-edge', addEdge)
+      G6.registerBehavior('select-edge', selectEdge)
       // 缩略图
       let minimap = new G6.Minimap({
         container: this.$refs.sidebar.$refs.minimap,
@@ -88,19 +91,27 @@ export default {
             },
             'click-add-node',
             'click-select',
-            'activate-relations'
+            // 'edge-tooltip'
+            'select-edge'
           ],
           addEdge: [
             'click-add-edge',
             'hover-node',
             'zoom-canvas',
             'drag-canvas',
-            'click-add-node',
-            'activate-relations'
+            'click-add-node'
           ]
         },
         defaultNode: defaultNode,
         defaultEdge: defaultEdge,
+        edgeStateStyles: {
+          hover: {
+            stroke: '#409eff' // 颜色
+          },
+          selected: {
+            stroke: '#409eff' // 颜色
+          }
+        },
         nodeStateStyles: {
           selected: {
             stroke: '#409eff',
@@ -114,14 +125,23 @@ export default {
       // 点击节点
       this.graph.on('nodeselectchange', (e) => {
         this.item = e
+        this.selectedEdgeId = ''
         this.selectedNodeId = e.select ? e.selectedItems.nodes[0]._cfg.id : ''
       })
       // 拖动节点
-      this.graph.on('node:dragend', (e) => {
-        let itemModel = e.item.getModel()
-        itemModel.fixed = true
-        itemModel.fx = e.x
-        itemModel.fy = e.y
+      // this.graph.on('node:dragend', (e) => {
+      //   let itemModel = e.item.getModel()
+      //   itemModel.fixed = true
+      //   itemModel.fx = e.x
+      //   itemModel.fy = e.y
+      // })
+      this.graph.on('edge:click', (e) => {
+        this.selectedNodeId = ''
+        this.selectedEdgeId = e.item._cfg.id
+      })
+      this.graph.on('canvas:click', (e) => {
+        this.selectedNodeId = ''
+        this.selectedEdgeId = ''
       })
     }
   }
@@ -165,5 +185,12 @@ export default {
       }
     }
   }
+}
+.g6-tooltip {
+  padding: 10px 6px;
+  color: #444;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
 }
 </style>

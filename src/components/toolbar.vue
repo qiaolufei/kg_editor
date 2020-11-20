@@ -9,10 +9,10 @@
           <template style="color:#C0C4CC" v-if="index==8">
               {{size}}%
           </template>
-          <template v-else-if="index==10">
+          <template v-else-if="index==9">
               <v-spacer></v-spacer>
           </template>
-          <template v-else-if="index==2 || index == 5 || index == 7 || index == 11 || index == 13">
+          <template v-else-if="index==2 || index == 5 || index == 7 || index == 10 || index == 12">
           <v-divider
             vertical
           ></v-divider>
@@ -33,11 +33,10 @@ export default {
       { icon: 'mdi-content-copy', tip: '复制 Ctrl+C', event: 'copy' },
       { icon: 'mdi-content-paste', tip: '粘贴 Ctrl+V', event: 'paste' },
       { icon: 'mdi-trash-can-outline', tip: '删除 Delete', event: 'delete' },
-      { icon: 'mdi-vector-arrange-above', tip: '置于顶层', event: 'plus' },
-      { icon: 'mdi-vector-arrange-below', tip: '置于底层', event: 'plus' },
+      { icon: 'mdi-vector-arrange-above', tip: '置于顶层', event: 'onTop' },
+      { icon: 'mdi-vector-arrange-below', tip: '置于底层', event: 'onBottom' },
       { icon: 'mdi-magnify-plus-outline', tip: '放大', event: 'plus' },
       { icon: 'mdi-magnify-minus-outline', tip: '缩小', event: 'minus' },
-      { icon: 'mdi-arrow-collapse-all', tip: '适应画布', event: 'adaptCanvas' },
       { icon: 'mdi-cloud-upload', tip: '导入文件', event: 'importFile' },
       { icon: 'mdi-file-image', tip: '导出图片', event: 'saveImage' },
       { icon: 'mdi-file-pdf', tip: '导出PDF', event: 'savePDF' },
@@ -47,7 +46,21 @@ export default {
   methods: {
     comment_event (event) { // 事件中转
       this[event]()
-    }
+    },
+    revoke () {},
+    restore () {},
+    copy () {},
+    paste () {},
+    delete () {},
+    onTop () {},
+    onBottom () {},
+    plus () {},
+    minus () {},
+    adaptCanvas () {},
+    importFile () {},
+    saveImage () {},
+    savePDF () {},
+    help () {}
   }
 }
 </script>

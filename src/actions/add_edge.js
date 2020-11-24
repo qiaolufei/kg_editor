@@ -27,11 +27,21 @@ export default{
         source: model.id,
         target: point
       }
-      this.edge = graph.addItem('edge', obj)
-      store.commit('addEdge', obj)
-      this.addingEdge = true
-      e.item._cfg.model.linkPoints.bottom = false
-      this.graph.refreshItem(e.item)
+      let b = this.graph.getEdges().some((edge) => {
+        console.log(edge._cfg.source._cfg.id)
+        console.log(edge._cfg.target._cfg.id)
+        console.log(obj)
+        console.log((edge._cfg.source._cfg.id === obj.target) && (edge._cfg.target._cfg.id === obj.source))
+        return (edge._cfg.source._cfg.id === obj.target && edge._cfg.target._cfg.id === obj.source)
+      })
+      // console.log(b)
+      if (!b) {
+        this.edge = graph.addItem('edge', obj)
+        store.commit('addEdge', obj)
+        this.addingEdge = true
+        e.item._cfg.model.linkPoints.bottom = false
+        this.graph.refreshItem(e.item)
+      }
     }
   },
   onMousemove (e) {

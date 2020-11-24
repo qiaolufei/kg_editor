@@ -348,8 +348,6 @@ export default {
   watch: {
     selectedEdgeId: {
       handler (newVal, oldVal) {
-        console.log('.......')
-        console.log(newVal)
         if (newVal !== '') {
           let edgeArr = this.$store.state.dataList.edges.filter((item) => {
             return item.id === newVal

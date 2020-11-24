@@ -1,7 +1,7 @@
 <template>
   <div class="index">
     <v-app>
-      <Toolbar></Toolbar>
+      <Toolbar :size="size" :graph="graph" :selectedNodeId.sync="selectedNodeId" :selectedEdgeId.sync="selectedEdgeId"></Toolbar>
       <div class="index__main">
         <div
           ref="G6"
@@ -43,7 +43,8 @@ export default {
     selectedEdgeId: '',
     item: {},
     addingEdge: true,
-    edge: null
+    edge: null,
+    size: 100
   }),
   mounted () {
     this.initG6()
@@ -128,13 +129,6 @@ export default {
         this.selectedEdgeId = ''
         this.selectedNodeId = e.select ? e.selectedItems.nodes[0]._cfg.id : ''
       })
-      // 拖动节点
-      // this.graph.on('node:dragend', (e) => {
-      //   let itemModel = e.item.getModel()
-      //   itemModel.fixed = true
-      //   itemModel.fx = e.x
-      //   itemModel.fy = e.y
-      // })
       this.graph.on('edge:click', (e) => {
         this.selectedNodeId = ''
         this.selectedEdgeId = e.item._cfg.id
@@ -142,6 +136,11 @@ export default {
       this.graph.on('canvas:click', (e) => {
         this.selectedNodeId = ''
         this.selectedEdgeId = ''
+      })
+      this.graph.on('viewportchange', (e) => {
+        if (e.action === 'zoom') {
+          this.size = (Number(this.graph.getZoom()) * 100).toFixed(0)
+        }
       })
     }
   }

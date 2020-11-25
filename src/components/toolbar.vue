@@ -24,6 +24,7 @@
   </div>
 </template>
 <script>
+import {objectJS} from '@/utils/commen'
 export default {
   props: {
     size: {
@@ -83,10 +84,10 @@ export default {
       { icon: 'mdi-help-box', tip: '帮助', event: 'help' }
     ],
     node: {},
-    edge: {}
+    edge: {},
+    cloneNode: {}
   }),
   mounted () {
-    // window.addEventListener('keyup', this.handleKeyup)
     this.keyCodeForEvent()
   },
   methods: {
@@ -95,10 +96,35 @@ export default {
     },
     revoke () {},
     restore () {
-      location.reload()
+      this.graph.clear()
+      this.$store.commit('clearData')
     },
-    copy () {},
-    paste () {},
+    copy () {
+      if (this.selectedNodeId === '') {
+        this.$message.error('未选择节点！')
+      } else {
+        this.$store.state.dataList.nodes.forEach((node) => {
+          if (node.id === this.selectedNodeId) {
+            this.cloneNode = objectJS.deepClone(node)
+            this.$message.success('复制成功')
+          }
+        })
+      }
+    },
+    paste () {
+      if (this.selectedNodeId === '') {
+        this.$message.error('未选择节点！')
+      } else {
+        this.cloneNode.id = 'node' + (this.$store.state.dataList.nodes.length + 1)
+        this.cloneNode.label = this.$store.state.dataList.nodes.length + 1
+        this.cloneNode.x = this.cloneNode.x + 20
+        this.cloneNode.y = this.cloneNode.y + 20
+        let obj = objectJS.deepClone(this.cloneNode)
+        this.graph.addItem('node', obj)
+        this.$store.commit('addNode', obj)
+        this.$message.success('粘贴成功')
+      }
+    },
     delete () {
       if (this.selectedEdgeId === '' && this.selectedNodeId === '') {
         this.$message.error('未选择元素！')
@@ -115,7 +141,6 @@ export default {
         this.$message.error('未选择元素！')
       } else if (this.selectedEdgeId !== '') {
         this.graph.getEdges().forEach((edge) => {
-          console.log(edge)
           if (edge._cfg.id === this.selectedEdgeId) {
             edge.toFront()
           }
@@ -148,12 +173,12 @@ export default {
     plus () {
       const currentZoom = Number(this.graph.getZoom())
       this.graph.zoomTo(currentZoom + 0.1)
-      this.size = ((currentZoom + 0.1) * 100).toFixed(0)
+      this.size = Number(((currentZoom + 0.1) * 100).toFixed(0))
     },
     minus () {
       const currentZoom = Number(this.graph.getZoom())
       this.graph.zoomTo(currentZoom - 0.1)
-      this.size = ((currentZoom + 0.1) * 100).toFixed(0)
+      this.size = Number(((currentZoom - 0.1) * 100).toFixed(0))
     },
     adaptCanvas () {
       this.graph.fitView(20)
@@ -184,8 +209,24 @@ export default {
         if (key === 8) {
           code2 = 8
         }
+        if (key === 67) {
+          code2 = 67
+        }
+        if (key === 86) {
+          code2 = 86
+        }
         if (code === 17 && code2 === 8) {
           _this.delete()
+          code = 0
+          code2 = 0
+        }
+        if (code === 17 && code2 === 67) {
+          _this.copy()
+          code = 0
+          code2 = 0
+        }
+        if (code === 17 && code2 === 86) {
+          _this.paste()
           code = 0
           code2 = 0
         }

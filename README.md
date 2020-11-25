@@ -5,6 +5,14 @@
 
 </div>
 
+## 演示地址
+
+<div align="center">
+
+[KG-Editor](http://175.24.122.85:1030/#/)
+
+</div>
+
 ## 功能介绍
 
 - [x] 添加节点---双击画布空白处添加节点
@@ -16,12 +24,12 @@
   - [ ] 点击按钮撤销
   - [ ] Ctrl + Z撤销
 - [x] 重做功能
-- [ ] 复制节点功能
-  - [ ] 点击按钮复制
-  - [ ] Ctrl + C复制
-- [ ] 粘贴节点功能
-  - [ ] 点击按钮粘贴
-  - [ ] Ctrl + V粘贴
+- [x] 复制节点功能
+  - [x] 点击按钮复制
+  - [x] Ctrl + C复制
+- [x] 粘贴节点功能
+  - [x] 点击按钮粘贴
+  - [x] Ctrl + V粘贴
 - [x] 删除节点、连线功能
   - [x] 点击按钮删除
   - [x] Ctrl + Backspace删除
@@ -72,3 +80,7 @@ $ npm install / cnpm install
 # 运行示例
 $ npm run dev
 ```
+## 联系我
+
+#### Email: luffy0101@163.com
+#### 微信： ![WeChat](https://github.com/qiaolufei/kg_editor/blob/master/wechat.jpg)

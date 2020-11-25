@@ -11,6 +11,12 @@ const state = {
 }
 
 const mutations = {
+  clearData (state) { // 清空数据
+    state.dataList = {
+      nodes: [],
+      edges: []
+    }
+  },
   addNode (state, param) { // 添加节点
     state.dataList.nodes.push(param)
   },

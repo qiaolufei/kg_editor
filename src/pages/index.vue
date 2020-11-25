@@ -139,7 +139,7 @@ export default {
       })
       this.graph.on('viewportchange', (e) => {
         if (e.action === 'zoom') {
-          this.size = (Number(this.graph.getZoom()) * 100).toFixed(0)
+          this.size = Number((Number(this.graph.getZoom()) * 100).toFixed(0))
         }
       })
     }

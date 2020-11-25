@@ -1,4 +1,8 @@
 import store from '../store/store'
+let obj = {
+  source: '',
+  target: ''
+}
 export default{
   getEvents () {
     return {
@@ -23,25 +27,23 @@ export default{
       this.edge = null
       this.addingEdge = false
     } else {
-      let obj = {
+      obj = {
         source: model.id,
         target: point
       }
-      let b = this.graph.getEdges().some((edge) => {
-        console.log(edge._cfg.source._cfg.id)
-        console.log(edge._cfg.target._cfg.id)
-        console.log(obj)
-        console.log((edge._cfg.source._cfg.id === obj.target) && (edge._cfg.target._cfg.id === obj.source))
-        return (edge._cfg.source._cfg.id === obj.target && edge._cfg.target._cfg.id === obj.source)
-      })
-      // console.log(b)
-      if (!b) {
-        this.edge = graph.addItem('edge', obj)
-        store.commit('addEdge', obj)
-        this.addingEdge = true
-        e.item._cfg.model.linkPoints.bottom = false
-        this.graph.refreshItem(e.item)
-      }
+      this.edge = graph.addItem('edge', obj)
+      // let b = this.graph.getEdges().some((edge) => {
+      // console.log(edge._cfg.source._cfg.id)
+      // console.log(this.edge._cfg.source._cfg.id)
+      // console.log((edge._cfg.source._cfg.id === this.edge._cfg.target._cfg.id) && (edge._cfg.target._cfg.id === this.edge._cfg.source._cfg.id))
+      // return (edge._cfg.source._cfg.id === obj.target && edge._cfg.target._cfg.id === obj.source)
+      // })
+      // if (!b) {
+      store.commit('addEdge', obj)
+      this.addingEdge = true
+      e.item._cfg.model.linkPoints.bottom = false
+      this.graph.refreshItem(e.item)
+      // }
     }
   },
   onMousemove (e) {
@@ -54,6 +56,8 @@ export default{
         this.graph.updateItem(this.edge, {
           target: e.item._cfg.id
         })
+        obj.target = e.item._cfg.id
+        console.log(obj)
       } else {
         this.graph.updateItem(this.edge, {
           target: point

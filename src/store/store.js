@@ -17,6 +17,9 @@ const mutations = {
       edges: []
     }
   },
+  getData (state, param) { // 赋值
+    state.dataList = param
+  },
   addNode (state, param) { // 添加节点
     state.dataList.nodes.push(param)
   },

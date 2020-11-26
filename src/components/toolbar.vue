@@ -3,28 +3,82 @@
     <v-toolbar height="50">
       <v-tooltip v-for="(item, index) in tools" :key="index" bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn @click="comment_event(item.event)" icon v-bind="attrs" v-on="on">
-            <v-icon style="color:#35495E">{{item.icon}}</v-icon>
+          <v-btn
+            @click="comment_event(item.event)"
+            icon
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon style="color: #35495e">{{ item.icon }}</v-icon>
           </v-btn>
-          <template style="color:#C0C4CC" v-if="index==8">
-              {{size}}%
+          <template style="color: #c0c4cc" v-if="index == 8">
+            {{ size }}%
           </template>
-          <template v-else-if="index==10">
-              <v-spacer></v-spacer>
+          <template v-else-if="index == 10">
+            <v-spacer></v-spacer>
           </template>
-          <template v-else-if="index==2 || index == 5 || index == 7 || index == 11 || index == 12">
-          <v-divider
-            vertical
-          ></v-divider>
+          <template
+            v-else-if="
+              index == 2 ||
+              index == 5 ||
+              index == 7 ||
+              index == 11 ||
+              index == 12
+            "
+          >
+            <v-divider vertical></v-divider>
+          </template>
         </template>
-        </template>
-        <span>{{item.tip}}</span>
+        <span>{{ item.tip }}</span>
       </v-tooltip>
     </v-toolbar>
+    <el-dialog title="上传txt文件" :visible.sync="dialogVisible" width="50%">
+      数据格式：
+      <pre style="color:#000">
+        {
+          "nodes":[
+              {"id": "node1", "label": "luffy"},
+              {"id": "node2", "label": "24岁"},
+              {"id": "node3", "label": "62kg"}
+              ...
+          ],
+          "edges":[
+            {"id": "edge1", "source": "node1", "target": "node2", "label": "姓名"},
+            {"id": "edge2", "source": "node1", "target": "node3", "label": "体重"}
+            ...
+          ]
+        }
+      </pre>
+      <div style="text-align:center">
+      <el-upload
+        drag
+        :limit="1"
+        action="https://jsonplaceholder.typicode.com/posts/"
+        ref="upload"
+        accept=".txt"
+        :close-on-click-modal="false"
+        :file-list="fileList"
+        :on-success="onSuccess"
+        :on-remove="onRemove"
+      >
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">
+          上传txt文件，且只能上传 1 个文件
+        </div>
+      </el-upload>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitData"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
-import {objectJS} from '@/utils/commen'
+import { objectJS } from '@/utils/commen'
 export default {
   props: {
     size: {
@@ -73,7 +127,11 @@ export default {
       { icon: 'mdi-backup-restore', tip: '重做', event: 'restore' },
       { icon: 'mdi-content-copy', tip: '复制 Ctrl+C', event: 'copy' },
       { icon: 'mdi-content-paste', tip: '粘贴 Ctrl+V', event: 'paste' },
-      { icon: 'mdi-trash-can-outline', tip: '删除 Ctrl+Backspace', event: 'delete' },
+      {
+        icon: 'mdi-trash-can-outline',
+        tip: '删除 Ctrl+Backspace',
+        event: 'delete'
+      },
       { icon: 'mdi-vector-arrange-above', tip: '置于顶层', event: 'onTop' },
       { icon: 'mdi-vector-arrange-below', tip: '置于底层', event: 'onBottom' },
       { icon: 'mdi-magnify-plus-outline', tip: '放大', event: 'plus' },
@@ -85,13 +143,28 @@ export default {
     ],
     node: {},
     edge: {},
-    cloneNode: {}
+    cloneNode: {},
+    dialogVisible: false,
+    uploadData: {},
+    fileList: []
   }),
   mounted () {
     this.keyCodeForEvent()
   },
   methods: {
-    comment_event (event) { // 事件中转
+    onSuccess (res, file, fileList) {
+      let reader = new FileReader()
+      reader.readAsText(file.raw)
+      reader.onload = (e) => {
+        this.uploadData = []
+        this.uploadData = JSON.parse(String(e.target.result).replace(/\s*/g, ''))
+      }
+    },
+    onRemove (file) {
+      this.fileList = []
+    },
+    comment_event (event) {
+      // 事件中转
       this[event]()
     },
     revoke () {},
@@ -115,7 +188,8 @@ export default {
       if (this.selectedNodeId === '') {
         this.$message.error('未选择节点！')
       } else {
-        this.cloneNode.id = 'node' + (this.$store.state.dataList.nodes.length + 1)
+        this.cloneNode.id =
+          'node' + (this.$store.state.dataList.nodes.length + 1)
         this.cloneNode.label = this.$store.state.dataList.nodes.length + 1
         this.cloneNode.x = this.cloneNode.x + 20
         this.cloneNode.y = this.cloneNode.y + 20
@@ -185,7 +259,15 @@ export default {
       this.graph.fitCenter()
       this.graph.zoomTo(1)
     },
-    importFile () {},
+    importFile () {
+      this.dialogVisible = true
+    },
+    submitData () {
+      this.$store.commit('getData', this.uploadData)
+      this.graph.data(this.$store.state.dataList)
+      this.graph.render()
+      this.dialogVisible = false
+    },
     saveImage () {
       this.graph.downloadFullImage('graph', 'image/png', {
         backgroundColor: '#fff',
@@ -240,15 +322,17 @@ export default {
         }
       }
     }
-
   }
 }
 </script>
 <style lang="less">
-.toolbar{
+.toolbar {
   position: fixed;
   background: #fff;
   width: 100%;
   z-index: 999;
+}
+.v-modal {
+  display: none;
 }
 </style>

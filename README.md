@@ -42,7 +42,25 @@
   - [x] 点击按钮缩小
   - [x] 鼠标滚轮下滑
 - [x] 适应画布
-- [ ] 上传数据文件生成知识图谱功能
+- [x] 上传数据文件生成知识图谱功能
+
+```js
+// 文件数据格式
+{
+    "nodes":[
+        {"id": "node1", "label": "luffy"},
+        {"id": "node2", "label": "24岁"},
+        {"id": "node3", "label": "62kg"}
+        ...
+    ],
+    "edges":[
+        {"id": "edge1", "source": "node1", "target": "node2", "label": "姓名"},
+        {"id": "edge2", "source": "node1", "target": "node3", "label": "体重"}
+        ...
+    ]
+}
+```
+
 - [x] 导出图片功能
 - [x] 帮助
 ## 项目目录
@@ -83,4 +101,4 @@ $ npm run dev
 ## 联系我
 
 #### Email: luffy0101@163.com
-#### 微信： ![WeChat](https://github.com/qiaolufei/kg_editor/blob/master/wechat.jpg)
+#### 微信： ![WeChat](/wechat.jpg)

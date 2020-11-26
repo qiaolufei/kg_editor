@@ -43,7 +43,7 @@
               ...
           ],
           "edges":[
-            {"id": "edge1", "source": "node1", "target": "node2", "label": "姓名"},
+            {"id": "edge1", "source": "node1", "target": "node2", "label": "年龄"},
             {"id": "edge2", "source": "node1", "target": "node3", "label": "体重"}
             ...
           ]

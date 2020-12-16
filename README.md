@@ -98,8 +98,10 @@ $ npm install / cnpm install
 # 运行示例
 $ npm run dev
 ```
+
 ## 联系我
 
 #### Email: luffy0101@163.com
+
 #### 微信： 
-![WeChat](/WeChat.jpg)
+![WeChat](/wechat.jpg)

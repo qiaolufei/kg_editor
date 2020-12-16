@@ -79,6 +79,7 @@
 </template>
 <script>
 import { objectJS } from '@/utils/commen'
+// import { clone } from '@antv/util'
 export default {
   props: {
     size: {
@@ -157,17 +158,48 @@ export default {
       reader.readAsText(file.raw)
       reader.onload = (e) => {
         this.uploadData = []
-        this.uploadData = JSON.parse(String(e.target.result).replace(/\s*/g, ''))
+        const str = String(e.target.result).replace(/\s*/g, '')
+        if (str === '' || str === null) {
+          this.$message.error('文档数据不能为空！')
+        } else {
+          try {
+            this.uploadData = JSON.parse(str)
+          } catch (err) {
+            this.$message.error(String(err))
+          }
+        }
       }
     },
     onRemove (file) {
       this.fileList = []
     },
     comment_event (event) {
-      // 事件中转
       this[event]()
     },
-    revoke () {},
+    revoke () { // 撤销
+      let log = this.$store.state.log
+      console.log(log)
+      let action = log[0].action
+      switch (action) {
+        case 'addNode':
+          this.graph.removeItem(log[0].data.id)
+          this.$store.commit('deleteNode', log[0].data)
+          break
+        case 'deleteNode':
+          this.graph.addItem('node', log[0].data)
+          this.$store.commit('addNode', log[0].data)
+          break
+        case 'addEdge':
+          this.graph.removeItem(log[0].data.id)
+          this.$store.commit('deleteEdge', log[0].data)
+          break
+        case 'deleteEdge':
+          this.graph.addItem('edge', log[0].data)
+          this.$store.commit('addEdge', log[0].data)
+          break
+      }
+      this.$store.commit('deleteLog')
+    },
     restore () {
       this.graph.clear()
       this.$store.commit('clearData')
@@ -203,11 +235,39 @@ export default {
       if (this.selectedEdgeId === '' && this.selectedNodeId === '') {
         this.$message.error('未选择元素！')
       } else if (this.selectedEdgeId !== '') {
+        let obj = {}
+        this.graph.getEdges().forEach((edge) => {
+          if (edge._cfg.id === this.selectedEdgeId) {
+            obj = edge._cfg.model
+          }
+        })
+        // 操作记录
+        let logObj = {
+          id: String('log' + (this.$store.state.log.length + 1)),
+          action: 'deleteEdge',
+          data: obj
+        }
+        this.$store.commit('addLog', logObj)
         this.graph.removeItem(this.selectedEdgeId)
-        this.$emit('update:selectedEdgeId', '')
+        this.$store.commit('deleteEdge', this.selectedEdgeId)
+        // this.$emit('update:selectedEdgeId', '')
       } else if (this.selectedNodeId !== '') {
+        let obj = {}
+        this.graph.getNodes().forEach((node) => {
+          if (node._cfg.id === this.selectedNodeId) {
+            obj = node._cfg.model
+          }
+        })
+        // 操作记录
+        let logObj = {
+          id: String('log' + (this.$store.state.log.length + 1)),
+          action: 'deleteNode',
+          data: obj
+        }
+        this.$store.commit('addLog', logObj)
         this.graph.removeItem(this.selectedNodeId)
-        this.$emit('update:selectedNodeId', '')
+        this.$store.commit('deleteNode', this.selectedNodeId)
+        // this.$emit('update:selectedNodeId', '')
       }
     },
     onTop () {
@@ -288,6 +348,9 @@ export default {
         if (key === 17) {
           code = 17
         }
+        if (key === 90) {
+          code2 = 90
+        }
         if (key === 8) {
           code2 = 8
         }
@@ -296,6 +359,11 @@ export default {
         }
         if (key === 86) {
           code2 = 86
+        }
+        if (code === 17 && code2 === 90) {
+          _this.revoke()
+          code = 0
+          code2 = 0
         }
         if (code === 17 && code2 === 8) {
           _this.delete()

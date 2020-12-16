@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 const state = {
+  log: [],
   dataList: {
     nodes: [],
     edges: []
@@ -11,13 +12,20 @@ const state = {
 }
 
 const mutations = {
+  addLog (state, param) { // 存储操作记录
+    state.log.unshift(param)
+    // state.log.reverse()
+  },
+  deleteLog (state) { // 删除操作记录
+    state.log.splice(0, 1)
+  },
   clearData (state) { // 清空数据
     state.dataList = {
       nodes: [],
       edges: []
     }
   },
-  getData (state, param) { // 赋值
+  getData (state, param) { // 导入数据
     state.dataList = param
   },
   addNode (state, param) { // 添加节点
@@ -28,13 +36,21 @@ const mutations = {
   },
   deleteNode (state, param) { // 删除节点
     let index = state.dataList.nodes.findIndex(function (value) {
-      return value.id === param.id
+      if (typeof param === 'string') {
+        return value.id === param
+      } else {
+        return value.id === param.id
+      }
     })
     state.dataList.nodes.splice(index, 1)
   },
   deleteEdge (state, param) { // 删除连线
     let index = state.dataList.edges.findIndex(function (value) {
-      return value.id === param.id
+      if (typeof param === 'string') {
+        return value.id === param
+      } else {
+        return value.id === param.id
+      }
     })
     state.dataList.edges.splice(index, 1)
   },

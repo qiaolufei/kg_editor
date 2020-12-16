@@ -32,18 +32,17 @@ export default{
         target: point
       }
       this.edge = graph.addItem('edge', obj)
-      // let b = this.graph.getEdges().some((edge) => {
-      // console.log(edge._cfg.source._cfg.id)
-      // console.log(this.edge._cfg.source._cfg.id)
-      // console.log((edge._cfg.source._cfg.id === this.edge._cfg.target._cfg.id) && (edge._cfg.target._cfg.id === this.edge._cfg.source._cfg.id))
-      // return (edge._cfg.source._cfg.id === obj.target && edge._cfg.target._cfg.id === obj.source)
-      // })
-      // if (!b) {
       store.commit('addEdge', obj)
+      // 操作记录
+      let logObj = {
+        id: String('log' + (store.state.log.length + 1)),
+        action: 'addEdge',
+        data: obj
+      }
+      store.commit('addLog', logObj)
       this.addingEdge = true
       e.item._cfg.model.linkPoints.bottom = false
       this.graph.refreshItem(e.item)
-      // }
     }
   },
   onMousemove (e) {
@@ -57,7 +56,6 @@ export default{
           target: e.item._cfg.id
         })
         obj.target = e.item._cfg.id
-        console.log(obj)
       } else {
         this.graph.updateItem(this.edge, {
           target: point

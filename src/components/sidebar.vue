@@ -15,31 +15,6 @@
               v-model="littlePanels"
               accordion
             >
-              <!-- <v-expansion-panel tile>
-                <v-expansion-panel-header> 位置 </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <div>
-                    <el-row type="flex" :gutter="20">
-                      <el-col :span="12"
-                        >X：<el-input
-                          v-model="node.x"
-                          style="width: 60%"
-                          type="number"
-                          size="mini"
-                        ></el-input
-                      ></el-col>
-                      <el-col :span="12"
-                        >Y：<el-input
-                          v-model="node.y"
-                          style="width: 60%"
-                          type="number"
-                          size="mini"
-                        ></el-input
-                      ></el-col>
-                    </el-row>
-                  </div>
-                </v-expansion-panel-content>
-              </v-expansion-panel> -->
               <v-expansion-panel tile>
                 <v-expansion-panel-header> 节点样式 </v-expansion-panel-header>
                 <v-expansion-panel-content>
@@ -237,19 +212,6 @@
                         ></el-color-picker>
                       </el-col>
                     </el-row>
-                    <!-- <el-row type="flex" :gutter="20">
-                      <el-col :span="12"
-                        ><el-checkbox-group @change="edgeChange" v-model="edge.style.startArrow">
-                          <el-checkbox
-                            label="开始箭头"
-                          ></el-checkbox> </el-checkbox-group
-                      ></el-col>
-                      <el-col :span="12"
-                        ><el-checkbox-group @change="edgeChange" v-model="edge.style.endArrow">
-                          <el-checkbox label="结束箭头"></el-checkbox>
-                        </el-checkbox-group>
-                      </el-col>
-                    </el-row> -->
                   </v-expansion-panel-content>
                 </v-expansion-panel>
                 <v-expansion-panel-header> 连线文本 </v-expansion-panel-header>

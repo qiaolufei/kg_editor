@@ -19,5 +19,12 @@ export default{
     }
     this.graph.addItem('node', obj)
     store.commit('addNode', obj)
+    // 操作记录
+    let logObj = {
+      id: String('log' + (store.state.log.length + 1)),
+      action: 'addNode',
+      data: obj
+    }
+    store.commit('addLog', logObj)
   }
 }

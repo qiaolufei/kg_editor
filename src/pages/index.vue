@@ -50,10 +50,6 @@ export default {
     this.initG6()
   },
   methods: {
-    nodeChange1 () {
-      this.graph.updateItem(this.node.id, this.node)
-      this.$store.commit('updateNode', this.node)
-    },
     initG6 () {
       G6.registerBehavior('hover-node', hoverNode)
       // 双击添加节点
@@ -61,6 +57,7 @@ export default {
       // 添加连线
       G6.registerBehavior('click-add-edge', addEdge)
       G6.registerBehavior('select-edge', selectEdge)
+      let grid = new G6.Grid()
       // 缩略图
       let minimap = new G6.Minimap({
         container: this.$refs.sidebar.$refs.minimap,
@@ -73,7 +70,7 @@ export default {
         container: 'G6',
         width: this.$refs.G6.offsetWidth,
         height: this.$refs.G6.offsetHeight,
-        plugins: [minimap],
+        plugins: [grid, minimap],
         layout: {
           type: 'force',
           nodeStrength: -30,
@@ -92,7 +89,6 @@ export default {
             },
             'click-add-node',
             'click-select',
-            // 'edge-tooltip'
             'select-edge'
           ],
           addEdge: [
@@ -123,7 +119,6 @@ export default {
       })
       this.graph.data(this.$store.state.dataList)
       this.graph.render()
-      // 点击节点
       this.graph.on('nodeselectchange', (e) => {
         this.item = e
         this.selectedEdgeId = ''

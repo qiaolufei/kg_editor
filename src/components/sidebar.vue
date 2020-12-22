@@ -25,6 +25,7 @@
                         v-model="radius"
                         style="width: 40%"
                         type="number"
+                        :min="1"
                         size="mini"
                       ></el-input
                     ></el-col>
@@ -45,6 +46,7 @@
                         v-model="node.style.lineWidth"
                         style="width: 40%"
                         type="number"
+                        :min="1"
                         size="mini"
                       ></el-input
                     ></el-col>
@@ -72,6 +74,7 @@
                         v-model="node.style.shadowBlur"
                         style="width: 40%"
                         type="number"
+                        :min="0"
                         size="mini"
                       ></el-input
                     ></el-col>
@@ -83,6 +86,7 @@
                         v-model="node.style.shadowOffsetX"
                         style="width: 40%"
                         type="number"
+                        :min="0"
                         size="mini"
                       ></el-input
                     ></el-col>
@@ -92,6 +96,7 @@
                         v-model="node.style.shadowOffsetY"
                         style="width: 40%"
                         type="number"
+                        :min="0"
                         size="mini"
                       ></el-input
                     ></el-col>
@@ -118,6 +123,7 @@
                         v-model="node.labelCfg.style.fontSize"
                         style="width: 60%"
                         size="mini"
+                        :min="1"
                         type="number"
                       ></el-input
                     ></el-col>
@@ -200,6 +206,7 @@
                           v-model="edge.style.lineWidth"
                           style="width: 40%"
                           type="number"
+                          :min="1"
                           size="mini"
                         ></el-input
                       ></el-col>
@@ -234,6 +241,7 @@
                         style="width: 60%"
                         size="mini"
                         type="number"
+                        :min="1"
                       ></el-input
                     ></el-col>
                     <el-col :span="12"
@@ -315,6 +323,8 @@ export default {
             return item.id === newVal
           })
           this.edge = edgeArr[0]
+          this.bigPanels = [0, 1]
+          this.littlePanels = [0, 1]
         }
       }
     },
@@ -326,6 +336,8 @@ export default {
           })
           this.node = nodeArr[0]
           this.radius = nodeArr[0].size[0] / 2
+          this.bigPanels = [0, 1]
+          this.littlePanels = [0, 1]
         }
       }
     }

@@ -117,8 +117,7 @@ export default {
           }
         }
       })
-      this.graph.data(this.$store.state.dataList)
-      this.graph.render()
+      this.graph.read(this.$store.state.dataList)
       this.graph.on('nodeselectchange', (e) => {
         this.item = e
         this.selectedEdgeId = ''

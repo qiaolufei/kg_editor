@@ -14,7 +14,6 @@ const state = {
 const mutations = {
   addLog (state, param) { // 存储操作记录
     state.log.unshift(param)
-    // state.log.reverse()
   },
   deleteLog (state) { // 删除操作记录
     state.log.splice(0, 1)

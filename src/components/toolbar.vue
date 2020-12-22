@@ -43,8 +43,8 @@
               ...
           ],
           "edges":[
-            {"id": "edge1", "source": "node1", "target": "node2", "label": "年龄"},
-            {"id": "edge2", "source": "node1", "target": "node3", "label": "体重"}
+            {"source": "node1", "target": "node2", "label": "年龄"},
+            {"source": "node1", "target": "node3", "label": "体重"}
             ...
           ]
         }
@@ -78,7 +78,7 @@
   </div>
 </template>
 <script>
-import { objectJS } from '@/utils/commen'
+import { isNullAndEmpty, objectJS } from '@/utils/commen'
 // import { clone } from '@antv/util'
 export default {
   props: {
@@ -178,7 +178,6 @@ export default {
     },
     revoke () { // 撤销
       let log = this.$store.state.log
-      console.log(log)
       let action = log[0].action
       switch (action) {
         case 'addNode':
@@ -250,7 +249,7 @@ export default {
         this.$store.commit('addLog', logObj)
         this.graph.removeItem(this.selectedEdgeId)
         this.$store.commit('deleteEdge', this.selectedEdgeId)
-        // this.$emit('update:selectedEdgeId', '')
+        this.$emit('update:selectedEdgeId', '')
       } else if (this.selectedNodeId !== '') {
         let obj = {}
         this.graph.getNodes().forEach((node) => {
@@ -267,7 +266,7 @@ export default {
         this.$store.commit('addLog', logObj)
         this.graph.removeItem(this.selectedNodeId)
         this.$store.commit('deleteNode', this.selectedNodeId)
-        // this.$emit('update:selectedNodeId', '')
+        this.$emit('update:selectedNodeId', '')
       }
     },
     onTop () {
@@ -323,9 +322,28 @@ export default {
       this.dialogVisible = true
     },
     submitData () {
-      this.$store.commit('getData', this.uploadData)
-      this.graph.data(this.$store.state.dataList)
-      this.graph.render()
+      const dataList = this.uploadData
+      let _this = this
+      if (!isNullAndEmpty(dataList.nodes)) {
+        dataList.nodes.forEach((item) => {
+          _this.graph.addItem('node', item)
+          _this.$store.commit('addNode', item)
+        })
+      }
+      if (!isNullAndEmpty(dataList.edges)) {
+        dataList.edges.forEach((item) => {
+          _this.graph.addItem('edge', item)
+          _this.$store.commit('addEdge', item)
+        })
+      }
+      this.graph.updateLayout({
+        type: 'force',
+        nodeStrength: -30,
+        preventOverlap: true,
+        nodeSize: 40,
+        edgeStrength: 0.1,
+        linkDistance: 100
+      })
       this.dialogVisible = false
     },
     saveImage () {
@@ -335,7 +353,7 @@ export default {
       })
     },
     help () {
-      window.open('https://github.com/qiaolufei/kg_editor')
+      window.open('https://github.com/qiaolufei/KG-Editor/issues/new')
     },
     // 模拟组合键触发函数
     keyCodeForEvent () {

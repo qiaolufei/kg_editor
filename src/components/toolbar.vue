@@ -16,6 +16,15 @@
           </template>
           <template v-else-if="index == 10">
             <v-spacer></v-spacer>
+              <el-select v-model="layout" @change="changeLayout" size="mini" placeholder="请选择">
+                <el-option
+                  v-for="item in layouts"
+                  :label="item.label"
+                  :value="item.value"
+                  :key="item.value">
+                </el-option>
+              </el-select>
+            <v-spacer></v-spacer>
           </template>
           <template
             v-else-if="
@@ -33,7 +42,7 @@
       </v-tooltip>
     </v-toolbar>
     <el-dialog title="上传txt文件" :visible.sync="dialogVisible" width="50%">
-      数据格式：
+      数据格式：<span style="color: #CE0025">(edges元素去除id参数!)</span>
       <pre style="color:#000">
         {
           "nodes":[
@@ -79,7 +88,6 @@
 </template>
 <script>
 import { isNullAndEmpty, objectJS } from '@/utils/commen'
-// import { clone } from '@antv/util'
 export default {
   props: {
     size: {
@@ -147,12 +155,20 @@ export default {
     cloneNode: {},
     dialogVisible: false,
     uploadData: {},
-    fileList: []
+    fileList: [],
+    layout: 'random',
+    layouts: [{label: '随机布局', value: 'random'}, {label: '力导向布局', value: 'force'}, {label: 'Fruchterman布局', value: 'fruchterman'}, {label: '环形布局', value: 'circular'}, {label: '辐射布局', value: 'radial'},
+      {label: '层次布局', value: 'dagre'}, {label: '同心圆布局', value: 'concentric'}, {label: '网格布局', value: 'grid'}]
   }),
   mounted () {
     this.keyCodeForEvent()
   },
   methods: {
+    changeLayout () {
+      this.graph.updateLayout({
+        type: this.layout
+      })
+    },
     onSuccess (res, file, fileList) {
       let reader = new FileReader()
       reader.readAsText(file.raw)
@@ -337,20 +353,19 @@ export default {
         })
       }
       this.graph.updateLayout({
-        type: 'force',
-        nodeStrength: -30,
-        preventOverlap: true,
-        nodeSize: 40,
-        edgeStrength: 0.1,
-        linkDistance: 100
+        type: 'random'
       })
       this.dialogVisible = false
     },
     saveImage () {
-      this.graph.downloadFullImage('graph', 'image/png', {
-        backgroundColor: '#fff',
-        padding: [15, 15, 15, 15]
-      })
+      if (!isNullAndEmpty(this.$store.state.dataList.nodes)) {
+        this.graph.downloadFullImage('graph', 'image/png', {
+          backgroundColor: '#fff',
+          padding: [15, 15, 15, 15]
+        })
+      } else {
+        this.$message.warning('画布为空！')
+      }
     },
     help () {
       window.open('https://github.com/qiaolufei/KG-Editor/issues/new')
@@ -420,5 +435,17 @@ export default {
 }
 .v-modal {
   display: none;
+}
+.el-select .el-input.is-focus .el-input__inner {
+  border-color: #35495e;
+}
+.el-select-dropdown__item.selected {
+    color: #35495e;
+}
+.el-select .el-input__inner:focus {
+    border-color: #35495e;
+}
+.el-input__inner:focus {
+    border-color: #35495e;
 }
 </style>

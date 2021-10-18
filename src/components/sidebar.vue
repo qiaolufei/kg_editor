@@ -187,7 +187,7 @@
                       >类型：<el-select
                         @change="edgeChange"
                         v-model="edge.type"
-                        style="width: 60%"
+                        style="width: 72%"
                         size="mini"
                       >
                         <el-option
@@ -391,5 +391,8 @@ export default {
 /deep/ .littlepanel .v-expansion-panel-content__wrap {
   padding: 0 10px 10px 20px;
   box-sizing: border-box;
+}
+/deep/ .el-input__inner{
+  padding: 0 0 0 15px;
 }
 </style>

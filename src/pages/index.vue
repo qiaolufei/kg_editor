@@ -9,11 +9,6 @@
           class="index__main-left"
           :style="{ width: drawer ? '78%' : '100%' }"
         ></div>
-        <!-- <div
-          class="index__main-right__pot"
-          :style="{ right: !drawer ? '-1vw' : '22.2%' }"
-          @click="drawer = !drawer"
-        ></div> -->
         <div class="index__main-right" :style="{ width: drawer ? '25%' : '0' }">
           <Sidebar ref="sidebar" :graph="graph" :selectedNodeId="selectedNodeId" :selectedEdgeId="selectedEdgeId"></Sidebar>
         </div>

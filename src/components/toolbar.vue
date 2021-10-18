@@ -42,7 +42,7 @@
       </v-tooltip>
     </v-toolbar>
     <el-dialog title="上传txt文件" :visible.sync="dialogVisible" width="50%">
-      数据格式：<span style="color: #CE0025">(edges元素去除id参数!)</span>
+      数据格式：（<a href="https://github.com/qiaolufei/KG-Editor/issues/3" target="_blank">进阶版数据格式</a>）
       <pre style="color:#000">
         {
           "nodes":[
@@ -87,6 +87,8 @@
   </div>
 </template>
 <script>
+import defaultNode from '@/default/default_node'
+import defaultEdge from '@/default/default_edge'
 import { isNullAndEmpty, objectJS } from '@/utils/commen'
 export default {
   props: {
@@ -337,17 +339,30 @@ export default {
     importFile () {
       this.dialogVisible = true
     },
+    initializeObj (source, target) { // 初始化node/edge，防止上传文件数据中缺少参数
+      for (let key in source) {
+        if (!target.hasOwnProperty(key)) {
+          target[key] = source[key]
+        }
+        if (typeof source[key] === 'object') {
+          this.initializeObj(source[key], target[key])
+        }
+      }
+      return target
+    },
     submitData () {
       const dataList = this.uploadData
       let _this = this
       if (!isNullAndEmpty(dataList.nodes)) {
         dataList.nodes.forEach((item) => {
+          this.initializeObj(defaultNode, item)
           _this.graph.addItem('node', item)
           _this.$store.commit('addNode', item)
         })
       }
       if (!isNullAndEmpty(dataList.edges)) {
         dataList.edges.forEach((item) => {
+          this.initializeObj(defaultEdge, item)
           _this.graph.addItem('edge', item)
           _this.$store.commit('addEdge', item)
         })
@@ -447,5 +462,8 @@ export default {
 }
 .el-input__inner:focus {
     border-color: #35495e;
+}
+.el-scrollbar__wrap{
+  overflow-x: hidden;
 }
 </style>

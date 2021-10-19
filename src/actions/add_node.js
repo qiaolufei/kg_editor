@@ -11,11 +11,12 @@ export default{
     }
   },
   onClick (ev) {
+    console.log(ev)
     let obj = {
       id: String('node' + (store.state.dataList.nodes.length + 1)),
       label: String(store.state.dataList.nodes.length + 1),
-      x: ev.canvasX,
-      y: ev.canvasY
+      x: ev.x,
+      y: ev.y
     }
     this.graph.addItem('node', obj)
     store.commit('addNode', obj)

@@ -32,7 +32,7 @@
               index == 5 ||
               index == 7 ||
               index == 11 ||
-              index == 12
+              index == 13
             "
           >
             <v-divider vertical></v-divider>
@@ -150,6 +150,7 @@ export default {
       { icon: 'mdi-arrow-collapse-all', tip: '适应画布', event: 'adaptCanvas' },
       { icon: 'mdi-cloud-upload', tip: '导入文件', event: 'importFile' },
       { icon: 'mdi-file-image', tip: '导出图片', event: 'saveImage' },
+      { icon: 'mdi-file-code', tip: '导出JSON', event: 'saveJson' },
       { icon: 'mdi-help-box', tip: '帮助', event: 'help' }
     ],
     node: {},
@@ -380,6 +381,35 @@ export default {
         })
       } else {
         this.$message.warning('画布为空！')
+      }
+    },
+    saveJson () {
+      if (!isNullAndEmpty(this.$store.state.dataList.nodes)) {
+        const dataList = this.$store.state.dataList
+        const content = {}
+        content.nodes = dataList.nodes.map(x => {
+          return {
+            id: x.id,
+            label: x.label
+          }
+        })
+        content.edges = dataList.edges.map(x => {
+          return {
+            source: x.source,
+            target: x.target,
+            label: x.label
+          }
+        })
+        var eleLink = document.createElement('a')
+        eleLink.download = 'kg.json'
+        eleLink.style.display = 'none'
+        var blob = new Blob([JSON.stringify(content)])
+        eleLink.href = URL.createObjectURL(blob)
+        document.body.appendChild(eleLink)
+        eleLink.click()
+        document.body.removeChild(eleLink)
+      } else {
+        this.$message.warning('暂无数据可导出！')
       }
     },
     help () {

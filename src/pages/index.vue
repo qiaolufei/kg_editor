@@ -154,6 +154,7 @@ export default {
       height: 88vh;
       border: 1px solid #3333;
       margin-top: 2vw;
+      margin-right: 10px;
       overflow-y: scroll;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
       &__pot {

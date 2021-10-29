@@ -33,7 +33,6 @@ export default{
       }
       this.edge = graph.addItem('edge', obj)
       store.commit('addEdge', obj)
-      console.log(store.state.dataList)
       // 操作记录
       let logObj = {
         id: String('log' + (store.state.log.length + 1)),

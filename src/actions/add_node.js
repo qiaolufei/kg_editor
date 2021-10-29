@@ -11,7 +11,6 @@ export default{
     }
   },
   onClick (ev) {
-    console.log(ev)
     let obj = {
       id: String('node' + (store.state.dataList.nodes.length + 1)),
       label: String(store.state.dataList.nodes.length + 1),

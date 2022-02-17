@@ -387,19 +387,21 @@ export default {
       if (!isNullAndEmpty(this.$store.state.dataList.nodes)) {
         const dataList = this.$store.state.dataList
         const content = {}
-        content.nodes = dataList.nodes.map(x => {
-          return {
-            id: x.id,
-            label: x.label
-          }
-        })
-        content.edges = dataList.edges.map(x => {
-          return {
-            source: x.source,
-            target: x.target,
-            label: x.label
-          }
-        })
+        // content.nodes = dataList.nodes.map(x => {
+        //   return {
+        //     id: x.id,
+        //     label: x.label
+        //   }
+        // })
+        // content.edges = dataList.edges.map(x => {
+        //   return {
+        //     source: x.source,
+        //     target: x.target,
+        //     label: x.label
+        //   }
+        // })
+        content.nodes = dataList.nodes
+        content.edges = dataList.edges
         var eleLink = document.createElement('a')
         eleLink.download = 'kg.json'
         eleLink.style.display = 'none'
